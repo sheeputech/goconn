@@ -1,0 +1,33 @@
+{
+    "results_returned": 1,
+    "events": [
+        {
+            "event_url": "https://matching-dev-group.connpass.com/event/110673/",
+            "event_type": "participation",
+            "owner_nickname": "hei",
+            "series": {
+                "url": "https://matching-dev-group.connpass.com/",
+                "id": 6528,
+                "title": "Matching Dev Meetup"
+            },
+            "updated_at": "2019-01-08T01:00:05+09:00",
+            "lat": "35.653979600000",
+            "started_at": "2019-01-23T19:30:00+09:00",
+            "hash_tag": "matching_dev",
+            "title": "Matching Dev Meetup#2 - ServerSide",
+            "event_id": 110673,
+            "lon": "139.741731600000",
+            "waiting": 0,
+            "limit": 62,
+            "owner_id": 10837,
+            "owner_display_name": "shaunkawano",
+            "description": "",
+            "catch": "",
+            "accepted": 48,
+            "ended_at": "2019-01-23T22:00:00+09:00",
+            "place": ""
+        }
+    ],
+    "results_start": 1,
+    "results_available": 440
+}
