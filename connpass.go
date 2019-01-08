@@ -1,4 +1,4 @@
-package connpassgo
+package connpass
 
 import (
 	"bytes"
@@ -27,6 +27,16 @@ type Client struct {
 	UserAgent  string
 }
 
+const (
+	QueryOrderUpdate Order = 1 + iota // by updated time
+	QueryOrderStart                   // by start time
+	QueryOrderCreate                  // new arrival order
+)
+
+const (
+	QueryFormatJSON Format = "json"
+)
+
 // QueryParams includes search queries to connpass
 type QueryParams struct {
 	EventIds             []int
@@ -41,28 +51,13 @@ type QueryParams struct {
 	Count                int
 	Format               Format
 }
-
-// Order defines the order of returned events (default: 1)
-type Order int
-
-const (
-	QueryOrderUpdate Order = 1 + iota // by updated time
-	QueryOrderStart                   // by start time
-	QueryOrderCreate                  // new arrival order
-)
-
-// Format is format of returned object
-type Format string
-
-const (
-	QueryFormatJSON Format = "json"
-)
-
 type Time struct {
 	Year  int
 	Month int
 	Day   int
 }
+type Order int
+type Format string
 
 // Results is responded contents from the connpass API
 type Results struct {
@@ -71,7 +66,6 @@ type Results struct {
 	ResultsStart     int     `json:"results_start"`
 	Events           []Event `json:"events"`
 }
-
 type Event struct {
 	EventID          int       `json:"event_id"`
 	Title            string    `json:"title"`
@@ -95,7 +89,6 @@ type Event struct {
 	Waiting          int       `json:"waiting"`
 	UpdatedAt        time.Time `json:"updated_at"`
 }
-
 type Series struct {
 	ID    int    `json:"id"`
 	Title string `json:"title"`
@@ -121,6 +114,7 @@ func buildURL(q QueryParams) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	v := url.Values{}
 	setIntValues(v, "event_id", q.EventIds)
 	setStringValues(v, "keyword", q.KeywordsAnd)
@@ -168,7 +162,6 @@ func (c *Client) newRequest(ctx context.Context, method, urlStr string, body int
 	if err != nil {
 		return nil, err
 	}
-
 	req.Header.Set("Content-Type", mediaType)
 	req.Header.Set("Accept", mediaType)
 	req.Header.Set("User-Agent", c.UserAgent+" "+runtime.Version())
@@ -201,13 +194,11 @@ func setIntValues(uv url.Values, k string, v []int) {
 		uv.Set(k, strings.Join(ss, ","))
 	}
 }
-
 func setStringValues(uv url.Values, k string, v []string) {
 	if v != nil {
 		uv.Set(k, strings.Join(v, ","))
 	}
 }
-
 func setTimeValues(uv url.Values, v []Time) {
 	if v != nil && len(v) > 0 {
 		ymd := []string{}
@@ -244,7 +235,9 @@ func (c *Client) SearchEvents(ctx context.Context, q QueryParams) (*Results, err
 
 	var results Results
 	_, err = c.do(ctx, req, &results)
+	if err != nil {
+		return nil, err
+	}
 
 	return &results, err
-
 }
