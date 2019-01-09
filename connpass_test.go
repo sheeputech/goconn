@@ -119,17 +119,17 @@ func TestNewRequest(t *testing.T) {
 	req, _ := c.newRequest(ctx, http.MethodGet, inputURL, inputBody)
 
 	if req.URL.String() != outputURL {
-		t.Errorf("NewRequest() is invalid: input= %v, req.URL= %v, expected= %v", inputURL, req.URL, outputURL)
+		t.Errorf("newRequest() is invalid: input= %v, req.URL= %v, expected= %v", inputURL, req.URL, outputURL)
 	}
 
 	body, _ := ioutil.ReadAll(req.Body)
 	if string(body) != outputBody {
-		t.Errorf("NewRequest() is invalid: input= %v, req.Body= %v, expected= %v", inputBody, string(body), outputBody)
+		t.Errorf("newRequest() is invalid: input= %v, req.Body= %v, expected= %v", inputBody, string(body), outputBody)
 	}
 
 	userAgent := req.Header.Get("User-Agent")
 	if c.UserAgent+" "+runtime.Version() != userAgent {
-		t.Errorf("NewRequest() is invalid: User-Agent= %v, expected= %v", c.UserAgent+" "+runtime.Version(), userAgent)
+		t.Errorf("newRequest() is invalid: User-Agent= %v, expected= %v", c.UserAgent+" "+runtime.Version(), userAgent)
 	}
 }
 func TestDo(t *testing.T) {
@@ -153,7 +153,7 @@ func TestDo(t *testing.T) {
 	body := new(test)
 	_, err := client.do(context.Background(), req, body)
 	if err != nil {
-		t.Fatalf("Do() failed: %v", err)
+		t.Fatalf("do() failed: %v", err)
 	}
 
 	expected := &test{"bar"}
@@ -162,42 +162,42 @@ func TestDo(t *testing.T) {
 	}
 }
 
-//func TestSearchEvents(t *testing.T) {
-//	t.Helper()
-//
-//	setup()
-//	defer closeServer()
-//
-//	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-//		if m := http.MethodGet; m != r.Method {
-//			t.Errorf("Request Method is invalid: got %v, expected %v", r.Method, m)
-//		}
-//		fmt.Fprint(w, `{"results_returned":1,"events":[{"event_url":"","event_type":"","owner_nickname":"","series":{"url":"https://www.sheepu.tech","id":6528,"title":"test"},"updated_at":"","lat":"","started_at":"","hash_tag":"","title":"","event_id":110673,"lon":"","waiting":0,"limit":62,"owner_id":10837,"owner_display_name":"","description":"","catch":"","accepted":48,"ended_at":"","place":""}],"results_start":1,"results_available":440}`)
-//	})
-//
-//	results, err := client.SearchEvents(ctx, QueryParams{SeriesIds: []int{6796}, Count: 1})
-//	if err != nil {
-//		t.Fatalf("unexpected error: %v", err)
-//	}
-//
-//	if results.ResultsReturned != 1 {
-//		t.Fatalf("unexpected response, invalid results_returned: got %v, expected %d", results.ResultsReturned, 1)
-//	}
-//
-//	series := Series{
-//		ID: 6796,
-//		Title: "LoRaWAN無料ハンズオンセミナー事務局",
-//		URL: "https://join-lorawanseminar.connpass.com/",
-//	}
-//	if !reflect.DeepEqual(results.Events[0].Series, series) {
-//		t.Fatalf("unexpected response, invalid event.series: got %v, expected %v", results.Events[0].Series, series)
-//	}
-//
-//	if results.ResultsStart != 1 {
-//		t.Fatalf("unexpected response, invalid results_start: got %v, expected %d", results.ResultsStart, 1)
-//	}
-//
-//	if results.ResultsAvailable != 1 {
-//		t.Fatalf("unexpected response, invalid results_available: got %v, expected %d", results.ResultsAvailable, 1)
-//	}
-//}
+func TestSearchEvents(t *testing.T) {
+	t.Helper()
+
+	setup()
+	defer closeServer()
+
+	mux.HandleFunc("https://connpass.com/api/v1/event/?count=1&event_id=2", func(w http.ResponseWriter, r *http.Request) {
+		if m := http.MethodGet; m != r.Method {
+			t.Errorf("Request Method is invalid: got %v, expected %v", r.Method, m)
+		}
+		fmt.Fprint(w, `{"results_returned":1,"events":[{"event_url":"","event_type":"","owner_nickname":"","series":{"url":"https://www.sheepu.tech","id":0,"title":"test"},"updated_at":"","lat":"","started_at":"","hash_tag":"","title":"","event_id":11111,"lon":"","waiting":0,"limit":62,"owner_id":10837,"owner_display_name":"","description":"","catch":"","accepted":48,"ended_at":"","place":""}],"results_start":1,"results_available":440}`)
+	})
+
+	results, err := client.SearchEvents(ctx, QueryParams{EventIds: []int{2}, Count: 1})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if results.ResultsReturned != 1 {
+		t.Fatalf("unexpected response, invalid results_returned: got %v, expected %d", results.ResultsReturned, 1)
+	}
+
+	series := Series{
+		ID: 1,
+		Title: "BPStudy",
+		URL: "https://bpstudy.connpass.com/",
+	}
+	if !reflect.DeepEqual(results.Events[0].Series, series) {
+		t.Fatalf("unexpected response, invalid event.series: got %v, expected %v", results.Events[0].Series, series)
+	}
+
+	if results.ResultsStart != 1 {
+		t.Fatalf("unexpected response, invalid results_start: got %v, expected %d", results.ResultsStart, 1)
+	}
+
+	if results.ResultsAvailable != 1 {
+		t.Fatalf("unexpected response, invalid results_available: got %v, expected %d", results.ResultsAvailable, 1)
+	}
+}
