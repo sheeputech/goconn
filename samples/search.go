@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/sheeputech/connpass-go"
 	"bytes"
-	"connpass-go"
 	"context"
 	"encoding/json"
 	"fmt"
