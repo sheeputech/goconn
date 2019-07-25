@@ -1,4 +1,4 @@
-# connpass-go  
+# goconn
 This repository is Go client for connpass event search API.  
 It is implemented with reference to the [hkurokawa/go-conpass](https://github.com/hkurokawa/go-connpass) and [digitalocean/godo](https://github.com/digitalocean/godo) etc...  
 
